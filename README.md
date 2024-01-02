@@ -56,7 +56,7 @@ This repository contains a platform setup for Change Data Capture (CDC) using Ap
     ORDER BY id
     SETTINGS index_granularity = 8192;
    ```
-6. **Create Debezium Source Connector**
+6. **Create MySQL Debezium Source Connector**
     ```bash
     curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
       "name": "mysql-poc-connector",
@@ -85,7 +85,40 @@ This repository contains a platform setup for Change Data Capture (CDC) using Ap
       }
     }'
     ```
-7. **Create ClickHouse Sink Connector**
+7. **Create PostgreSQL Debezium Source Connector**
+    ```bash
+    curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
+      "name": "postgres-poc-connector",
+      "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "tasks.max": "1",
+        "database.hostname": "postgresql",
+        "database.port": "5432",
+        "database.user": "myuser",
+        "database.password": "debezium",
+        "database.dbname": "mydb",
+        "database.server.name": "postgres_server",
+        "database.history.kafka.bootstrap.servers": "broker:29092",
+        "database.history.kafka.topic": "schemahistory.postgres.mydb",
+        "key.converter.schemas.enable": "false",
+        "value.converter.schemas.enable": "false",
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "plugin.name": "decoderbufs",
+        "slot.name": "debezium",
+        "slot.drop.on.stop": "false",
+        "topic.prefix": "namespace",
+        "transforms": "Reroute,unwrap",
+        "transforms.Reroute.type": "io.debezium.transforms.ByLogicalTableRouter",
+        "transforms.Reroute.topic.regex": "namespace.public.mytable(.*)",
+        "transforms.Reroute.topic.replacement": "my_custom_postgres_topic",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "transforms.unwrap.drop.tombstones": "false"
+      }
+    }'
+    ```
+    
+8. **Create ClickHouse Sink Connector**
     ```bash
     curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
       "name": "clickhouse-sink-connector",
@@ -105,10 +138,32 @@ This repository contains a platform setup for Change Data Capture (CDC) using Ap
       }
     }'
     ```
-8. **Insert Test Data in MySQL**
-   - Insert some test data into the MySQL table.
-9. **Verify Data in ClickHouse**
-   - Check the ClickHouse table to ensure data replication is successful.
+9. **Create Postgres ClickHouse Sink Connector**
+    ```bash
+    curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
+       "name": "clickhouse-postgres-sink-connector",
+       "config": {
+           "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
+           "tasks.max": "1",
+           "topics": "my_custom_postgres_topic",
+           "hostname": "clickhouse",
+           "password": "clickhousepw",
+           "port": "8123",
+           "key.converter.schemas.enable": "false",
+           "value.converter.schemas.enable": "false",
+           "username": "clickhouseuser",
+           "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+           "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+           "schemas.enable": "false"
+           }
+       }'
+    ```
+10. **Insert Test Data in MySQL**
+    - Insert some test data into the MySQL table.
+11. **Insert Test Data in PostgreSQL**
+    - Insert some test data into the PostgreSQL table.
+12. **Verify Data in ClickHouse**
+    - Check the ClickHouse table to ensure data replication is successful.
 
 ## Cleanup
 ```bash

@@ -64,6 +64,17 @@ services:
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mysqlpw
 
+  postgresql:
+    image: debezium/example-postgres:2.4.2.Final
+    hostname: postgresql
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: debezium
+      POSTGRES_USER: myuser
+      POSTGRES_DB: mydb
+
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     hostname: clickhouse
