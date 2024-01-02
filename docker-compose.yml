@@ -63,6 +63,8 @@ services:
       MYSQL_ROOT_PASSWORD: debezium
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mysqlpw
+    volumes:
+      - mysql-data:/var/lib/mysql
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -76,6 +78,8 @@ services:
       CLICKHOUSE_USER: clickhouseuser
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
       CLICKHOUSE_PASSWORD: clickhousepw
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
 
   connect:
     image: platform-cdc-connect:1.0.0
@@ -108,3 +112,7 @@ services:
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+
+volumes:
+  mysql-data:
+  clickhouse-data:
