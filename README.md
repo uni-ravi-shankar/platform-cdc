@@ -141,22 +141,22 @@ This repository contains a platform setup for Change Data Capture (CDC) using Ap
 9. **Create Postgres ClickHouse Sink Connector**
     ```bash
     curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
-       "name": "clickhouse-postgres-sink-connector",
-       "config": {
-           "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
-           "tasks.max": "1",
-           "topics": "my_custom_postgres_topic",
-           "hostname": "clickhouse",
-           "password": "clickhousepw",
-           "port": "8123",
-           "key.converter.schemas.enable": "false",
-           "value.converter.schemas.enable": "false",
-           "username": "clickhouseuser",
-           "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-           "key.converter": "org.apache.kafka.connect.json.JsonConverter",
-           "schemas.enable": "false"
-           }
-       }'
+      "name": "clickhouse-postgres-sink-connector",
+      "config": {
+        "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
+        "tasks.max": "1",
+        "topics": "my_custom_postgres_topic",
+        "hostname": "clickhouse",
+        "password": "clickhousepw",
+        "port": "8123",
+        "key.converter.schemas.enable": "false",
+        "value.converter.schemas.enable": "false",
+        "username": "clickhouseuser",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+        "schemas.enable": "false"
+      }
+    }'
     ```
 10. **Insert Test Data in MySQL**
     - Insert some test data into the MySQL table.
